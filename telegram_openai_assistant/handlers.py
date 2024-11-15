@@ -1,4 +1,5 @@
 # handlers.py
+
 import time
 import datetime
 from telegram.ext import CallbackContext
@@ -27,9 +28,9 @@ async def help_command(update: Update, context: CallbackContext) -> None:
     )
 
 
-def get_answer(message_str) -> None:
+def get_answer(message_str) -> str:
     """Get answer from assistant"""
-    thread = client.beta.threads.create()
+    thread = client.beta.threads.create()  # No await here
     client.beta.threads.messages.create(
         thread_id=thread.id, role="user", content=message_str
     )
@@ -64,7 +65,7 @@ async def process_message(update: Update, context: CallbackContext) -> None:
     if count >= 100:
         return
 
-    answer = get_answer(update.message.text)
+    answer = get_answer(update.message.text)  # Remove await here
     await context.bot.send_message(chat_id=update.effective_chat.id, text=answer)
     update_message_count(count + 1)
     save_qa(
